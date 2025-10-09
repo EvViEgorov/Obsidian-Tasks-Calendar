@@ -249,18 +249,46 @@ function setTaskContentContainer(currentDate) {
 			cellContent += setTask(sorted[t], type)
 		};
 	};
+	
+	getTasks(currentDate);
+	var tasksToDisplay = {
+		overdue: [],
+		due: [],
+		recurrence: [],
+		start: [],
+		scheduled: [],
+		process: [],
+		dailyNote: [],
+		done: [],
+		cancelled: []
+	};
+	
+	if (tToday == currentDate) {
+		tasksToDisplay.overdue = overdue;
+	};
+	
+	tasksToDisplay.due = due.concat(recurrence);
+	tasksToDisplay.start = start.filter(task => 
+		!task.due || moment(task.due.toString()).format("YYYY-MM-DD") !== currentDate
+	);
+	tasksToDisplay.scheduled = scheduled.filter(task => 
+		!task.due || moment(task.due.toString()).format("YYYY-MM-DD") !== currentDate
+	);
+	tasksToDisplay.process = process;
+	tasksToDisplay.dailyNote = dailyNote;
+	tasksToDisplay.done = done;
+	tasksToDisplay.cancelled = cancelled;
 
 	if (tToday == currentDate) {
-		showTasks(overdue, "overdue");
+		showTasks(tasksToDisplay.overdue, "overdue");
 	};
-	showTasks(due, "due");
-	showTasks(recurrence, "recurrence");
-	showTasks(start, "start");
-	showTasks(scheduled, "scheduled");
-	showTasks(process, "process");
-	showTasks(dailyNote, "dailyNote");
-	showTasks(done, "done");
-	showTasks(cancelled, "cancelled");
+	showTasks(tasksToDisplay.due, "due");
+	showTasks(tasksToDisplay.start, "start");
+	showTasks(tasksToDisplay.scheduled, "scheduled");
+	showTasks(tasksToDisplay.process, "process");
+	showTasks(tasksToDisplay.dailyNote, "dailyNote");
+	showTasks(tasksToDisplay.done, "done");
+	showTasks(tasksToDisplay.cancelled, "cancelled");
 	return cellContent;
 };
 
