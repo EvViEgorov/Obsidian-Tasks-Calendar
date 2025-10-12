@@ -250,17 +250,119 @@ function setTaskContentContainer(currentDate) {
 		};
 	};
 
-	if (tToday == currentDate) {
-		showTasks(overdue, "overdue");
+	getTasks(currentDate);
+
+	var processedTasks = new Set();
+	var tasksToDisplay = {
+		overdue: [],
+		due: [],
+		recurrence: [],
+		start: [],
+		scheduled: [],
+		process: [],
+		dailyNote: [],
+		done: [],
+		cancelled: []
 	};
-	showTasks(due, "due");
-	showTasks(recurrence, "recurrence");
-	showTasks(start, "start");
-	showTasks(scheduled, "scheduled");
-	showTasks(process, "process");
-	showTasks(dailyNote, "dailyNote");
-	showTasks(done, "done");
-	showTasks(cancelled, "cancelled");
+
+	function getTaskId(task) {
+		return task.text + task.link.path;
+	};
+
+	if (tToday == currentDate) {
+		overdue.forEach(task => {
+			var taskId = getTaskId(task);
+			if (!processedTasks.has(taskId)) {
+				tasksToDisplay.overdue.push(task);
+				processedTasks.add(taskId);
+			};
+		});
+	};
+
+	due.forEach(task => {
+		var taskId = getTaskId(task);
+		if (!processedTasks.has(taskId)) {
+			tasksToDisplay.due.push(task);
+			processedTasks.add(taskId);
+		};
+	});
+
+	recurrence.forEach(task => {
+		var taskId = getTaskId(task);
+		if (!processedTasks.has(taskId)) {
+			tasksToDisplay.recurrence.push(task);
+			processedTasks.add(taskId);
+		};
+	});
+
+	scheduled.forEach(task => {
+		var taskId = getTaskId(task);
+		if (!processedTasks.has(taskId)) {
+			tasksToDisplay.scheduled.push(task);
+			processedTasks.add(taskId);
+
+			var startIndex = tasksToDisplay.start.findIndex(t => getTaskId(t) === taskId);
+			if (startIndex !== -1) {
+				tasksToDisplay.start.splice(startIndex, 1);
+			};
+		};
+	});
+
+	start.forEach(task => {
+		var taskId = getTaskId(task);
+		if (!processedTasks.has(taskId)) {
+			var hasScheduledToday = task.scheduled && moment(task.scheduled.toString()).format("YYYY-MM-DD") === currentDate;
+
+			if (!hasScheduledToday) {
+				tasksToDisplay.start.push(task);
+				processedTasks.add(taskId);
+			};
+		};
+	});
+
+	process.forEach(task => {
+		var taskId = getTaskId(task);
+		if (!processedTasks.has(taskId)) {
+			tasksToDisplay.process.push(task);
+			processedTasks.add(taskId);
+		};
+	});
+
+	dailyNote.forEach(task => {
+		var taskId = getTaskId(task);
+		if (!processedTasks.has(taskId)) {
+			tasksToDisplay.dailyNote.push(task);
+			processedTasks.add(taskId);
+		};
+	});
+
+	done.forEach(task => {
+		var taskId = getTaskId(task);
+		if (!processedTasks.has(taskId)) {
+			tasksToDisplay.done.push(task);
+			processedTasks.add(taskId);
+		};
+	});
+
+	cancelled.forEach(task => {
+		var taskId = getTaskId(task);
+		if (!processedTasks.has(taskId)) {
+			tasksToDisplay.cancelled.push(task);
+			processedTasks.add(taskId);
+		};
+	});
+
+	if (tToday == currentDate) {
+		showTasks(tasksToDisplay.overdue, "overdue");
+	};
+	showTasks(tasksToDisplay.due, "due");
+	showTasks(tasksToDisplay.recurrence, "recurrence");
+	showTasks(tasksToDisplay.scheduled, "scheduled");
+	showTasks(tasksToDisplay.start, "start");
+	showTasks(tasksToDisplay.process, "process");
+	showTasks(tasksToDisplay.dailyNote, "dailyNote");
+	showTasks(tasksToDisplay.done, "done");
+	showTasks(tasksToDisplay.cancelled, "cancelled");
 	return cellContent;
 };
 
