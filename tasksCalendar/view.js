@@ -104,21 +104,29 @@ function getMeta(tasks) {
 			tasks[i].recurrence = true;
 			tasks[i].text = tasks[i].text.substring(0, taskText.indexOf("🔁"))
 		};
+		var lowestMatch = taskText.includes("⏬");
+		if (lowestMatch) {
+			tasks[i].priority = "F";
+		};
 		var lowMatch = taskText.includes("🔽");
 		if (lowMatch) {
-			tasks[i].priority = "D";
+			tasks[i].priority = "E";
 		};
 		var mediumMatch = taskText.includes("🔼");
 		if (mediumMatch) {
-			tasks[i].priority = "B";
+			tasks[i].priority = "C";
 		};
 		var highMatch = taskText.includes("⏫");
 		if (highMatch) {
+			tasks[i].priority = "B";
+		};
+		var highestMatch = taskText.includes("🔺");
+		if (highestMatch) {
 			tasks[i].priority = "A";
 		};
-		if (!lowMatch && !mediumMatch && !highMatch) {
-			tasks[i].priority = "C";
-		}
+		if (!lowestMatch && !lowMatch && !mediumMatch && !highMatch && !highestMatch) {
+			tasks[i].priority = "D";
+		};
 		if (globalTaskFilter) {
 			tasks[i].text = tasks[i].text.replaceAll(globalTaskFilter,"");
 		} else {
